@@ -1,9 +1,11 @@
 import hashlib
 import os
-import pafy
 import subprocess
-import time
 import sys
+import time
+
+import pafy
+
 import am_i_home
 
 
@@ -18,16 +20,12 @@ def play(song_name):
             return False
 
     def play_a_song(url):
-        try:
-            video = pafy.new(url)
-        except (IOError, ValueError):
-            print "This URL is not working: " + url
-            return False
+        video = pafy.new(url)
 
         best_audio_url = video.getbestaudio()._url
         if should_still_play() is False:
             print "I'm not home any more, we'll play a song another time"
-            return
+            return False
 
         process = subprocess.Popen(["cvlc", best_audio_url], stdout=subprocess.PIPE, preexec_fn=os.setsid)
         while process.poll() is None:
@@ -37,7 +35,7 @@ def play(song_name):
                 process.terminate()
                 return False
         if process.returncode is 0:
-            return True
+            raise IOError("Return code from cvlc is" + process.returncode, process.stderr.read())
         else:
             return False
 
@@ -47,6 +45,9 @@ def play(song_name):
 
     with open(file_name, "r") as f:
         for line in f:
-            if play_a_song(line.strip()) is True:
+            try:
+                play_a_song(line.strip())
                 break
+            except:
+                print sys.exc_info()[0]
         f.close()
