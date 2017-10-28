@@ -3,9 +3,9 @@ import os
 
 import sys
 
-directory = "/var/lib/aplayer/"
+directory = "/etc/aplayer/"
 
-fileName = directory + "songNames"
+fileName = directory + "songs"
 songNames = []
 if os.path.exists(fileName):
     with open(fileName, "r") as file:
