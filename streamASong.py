@@ -17,20 +17,29 @@ def should_still_play():
 
 
 def play_a_song(url):
-    video = pafy.new(url)
+    try:
+        video = pafy.new(url)
+    except (IOError, ValueError):
+        print "This URL is not working: " + url
+        return False
 
     bestAudioUrl = video.getbestaudio()._url
     if should_still_play() is False:
         print "I'm not home, We'll play a song another time"
         sys.exit()
 
+    print url
     process = subprocess.Popen(["mplayer", bestAudioUrl], stdout=subprocess.PIPE, preexec_fn=os.setsid)
     while process.poll() is None:
         if should_still_play():
             time.sleep(.200)
         else:
             process.terminate()
-            break
+            return False
+    if process.returncode is 0:
+        return True
+    else:
+        return False
 
 
 directory = "/var/lib/aplayer/videolinks/"
@@ -39,5 +48,6 @@ fileName = directory + songNameHashed
 
 with open(fileName, "r") as file:
     for line in file:
-        play_a_song(line)
+        if play_a_song(line.strip()) is True:
+            break
     file.close()

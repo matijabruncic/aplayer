@@ -21,3 +21,4 @@ chown $1:$1 /var/lib/aplayer/am_i_home
 echo "1" > /var/lib/aplayer/am_i_home
 
 pip install pafy
+pip install youtube-dl
