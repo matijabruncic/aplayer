@@ -29,7 +29,7 @@ def play_a_song(url):
         sys.exit()
 
     print url
-    process = subprocess.Popen(["mplayer", bestAudioUrl], stdout=subprocess.PIPE, preexec_fn=os.setsid)
+    process = subprocess.Popen(["cvlc", bestAudioUrl], stdout=subprocess.PIPE, preexec_fn=os.setsid)
     while process.poll() is None:
         if should_still_play():
             time.sleep(.200)
