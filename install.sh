@@ -11,3 +11,5 @@ if [ $? == "1" ]
 then
     echo "Failed! Try using sudo.."
 fi
+
+pip install pafy
