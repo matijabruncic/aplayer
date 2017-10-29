@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>APlayer</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+          integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.min.js"></script>
+
+    <script>
+        angular.module('myApp', [])
+            .controller('HomeCtrl', function ($scope, $http) {
+
+                $scope.info = {};
+
+                $scope.showlist = function () {
+                    $http({
+                        method: 'GET',
+                        url: '/get-songs'
+
+                    }).then(function (response) {
+                        $scope.songs = response.data;
+                        console.log('get-songs', $scope.songs);
+                    }, function (error) {
+                        console.log(error);
+                    });
+                };
+
+
+                $scope.deleteSong = function (songId) {
+
+                    $http({
+                        method: 'DELETE',
+                        url: '/song/' + songId
+                    }).then(function () {
+                        $scope.showlist();
+                    }, function (error) {
+                        console.log(error);
+                    });
+                };
+
+                $scope.insertSong = function () {
+
+                    $http({
+                        method: 'POST',
+                        url: '/song',
+                        data: $scope.newSong
+                    }).then(function () {
+                        $scope.showlist();
+                        $scope.newSong.artist = '';
+                        $scope.newSong.name = '';
+                    }, function (error) {
+                        console.log(error);
+                    });
+                };
+
+                $scope.showlist();
+            })
+    </script>
+
+
+</head>
+
+<body ng-controller="HomeCtrl">
+
+<div class="container">
+    <div class="bs-example" data-example-id="panel-without-body-with-table">
+        <div class="panel panel-default">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Artist</th>
+                    <th>Song</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="song in songs">
+                    <td>{{ '{{song.artist}}' }}</td>
+                    <td>{{ '{{song.name}}' }}</td>
+                    <td>
+                        <button type="submit" ng-click="deleteSong(song.id)" class="btn btn-info btn-sm">
+                            <span class="glyphicon glyphicon-eye-open"></span>
+                            <span class="hidden-xs hidden-sm"></span>
+                        </button>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <form ng-submit="insertSong()">
+        <input type="text" class="form-control" placeholder="Artist" ng-model="newSong.artist">
+        <input type="text" class="form-control" placeholder="Song name" ng-model="newSong.name">
+        <input type="submit" id="submit" value="Submit"/>
+    </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
