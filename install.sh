@@ -23,3 +23,5 @@ echo "1" > /var/lib/aplayer/am_i_home
 pip install pafy
 pip install youtube-dl
 pip install flask
+
+ln -s /usr/share/aplayer/aplayer /usr/local/bin/aplayer
