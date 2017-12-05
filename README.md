@@ -2,5 +2,5 @@
 Automatic music player
 
 Installation:
-* add MS_API_KEY to your environment
+* add GOOGLE_API_KEY and GOOGLE_SEARCH_ENGINE_ID to your environment
 * insert your favorite songs in /etc/aplayer/songs
