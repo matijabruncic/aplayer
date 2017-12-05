@@ -7,7 +7,7 @@ import os
 
 
 def fetch(song_name):
-    url = "https://api.cognitive.microsoft.com/bing/v7.0/videos/search?"
+    url = "https://www.googleapis.com/customsearch/v1?"
     directory = "/var/lib/aplayer/videolinks/"
     
     def prepare_working_dir():
@@ -22,15 +22,22 @@ def fetch(song_name):
     if os.path.exists(file_name):
         return
 
-    query = urllib.urlencode({'q': song_name})
+    key = os.environ["GOOGLE_API_KEY"]
+    search_engine_id = os.environ["GOOGLE_SEARCH_ENGINE_ID"]
+    query = urllib.urlencode({
+		'q': song_name,
+		'key': key,
+		'cx': search_engine_id
+		})
     req = urllib2.Request(url + query)
-    req.add_header('Ocp-Apim-Subscription-Key', os.environ['MS_API_KEY'])
     response = urllib2.urlopen(req).read()
     data = json.loads(response)
-    results = data['value']
+    results = data['items']
 
     with open(file_name, 'w') as f:
         for result in results:
-            url = result['contentUrl']
+            url = result['formattedUrl']
             f.write(url + "\n")
         f.close()
+
+
