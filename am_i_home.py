@@ -21,7 +21,7 @@ def check():
             return False
 
     i_am_home = am_i_home()
-    dig = subprocess.Popen(["dig", "+short", "android-6042c858a3b6712d"], stdout=subprocess.PIPE, preexec_fn=os.setsid)
+    dig = subprocess.Popen(["dig", "+short", "OnePlus_5"], stdout=subprocess.PIPE, preexec_fn=os.setsid)
     while dig.poll() is None:
         time.sleep(.50)
     if dig.returncode is not 0:
