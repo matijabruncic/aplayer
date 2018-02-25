@@ -1,0 +1,82 @@
+---
+- hosts: aplayer
+  gather_facts: false
+  tasks:
+  - name: Cleanup unnecesary packages
+    package:
+      name: "{{ item }}"
+      state: absent
+      purge: yes
+    with_items:
+      - chromium-browser
+      - libreoffice-*
+      - wolfram-engine
+      - sonic-pi
+      - bluej
+      - greenfoot
+
+  - name: Install necesary packages
+    package:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - vim
+
+  - name: Prepare folders
+    file:
+      path: "{{ item }}"
+      state: directory
+      mode: a+rwx
+    with_items:
+      - /etc/aplayer
+      - /opt/aplayer
+
+  - name: Prepare log file
+    file:
+      path: "{{ item }}"
+      state: touch
+      mode: a+rwx
+    with_items:
+      - /var/log/aplayer.log
+      - /etc/aplayer/songs
+
+  - name: Install pip
+    easy_install:
+      name: pip
+      state: latest
+
+  - name: Install youtube-dl
+    pip:
+      name: youtube_dl
+      state: latest
+
+  - name: Install ytdl
+    pip:
+      name: pafy
+
+  - name: Install vlc
+    apt:
+      name: vlc
+      state: latest
+
+  - name: Rebuild aplayer
+    local_action: shell mvn clean install -f ../pom.xml
+    register: result
+    become_user: mbruncic
+
+  - name: Copy Jar to raspberry
+    copy:
+      src: "../target/aplayer.jar"
+      dest: "/opt/aplayer/aplayer.jar"
+
+  - name: Copy aplayer-service.sh
+    copy:
+      src: "../aplayer.service"
+      dest: "/etc/systemd/system/aplayer"
+      mode: a+rx,o+rwx
+
+  - name: Run Aplayer on RaspberryPi
+    service:
+      name: aplayer
+      state: restarted
+    become_user: pi
